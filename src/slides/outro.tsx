@@ -1,98 +1,110 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, F, MARBLES } from "../deck/theme";
+import { C, F } from "../deck/theme";
 import { POP, SlideDef, useSteps } from "../deck/steps";
-import { clamp01, rnd } from "../deck/ui";
+import { clamp01 } from "../deck/ui";
 import { useAmbient } from "../deck/clock";
 
-/* Event streams spiral in from every edge and merge in a pulsing core that sends rings of light outwards. */
-const CX = 960;
-const CY = 650;
-const ARMS = 10;
-const R0 = 1250;
-const TWIST = 1.6;
-const PER_ARM = 2;
-const TRAIL = 4;
-const RING_EVERY = 1.6;
-const RING_LIFE = 4.8;
+/* The classic reactive example: a spreadsheet. An input cell changes and the dependent cells recompute by themselves. */
+const PRICES = [100, 120, 80, 150];
+const QTYS = [3, 4, 5, 2];
+const CYCLE = 3;
+const LAG_C = 0.6;
+const LAG_D = 1.2;
 
-const armPoint = (k: number, u: number) => {
-  const a = (k / ARMS) * Math.PI * 2 + TWIST * u * u;
-  const r = R0 * (1 - u);
-  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) * 0.82 };
+const stateAt = (k: number) => {
+  const price = PRICES[Math.ceil(Math.max(0, k) / 2) % PRICES.length];
+  const qty = QTYS[Math.floor(Math.max(0, k) / 2) % QTYS.length];
+  const sum = price * qty;
+  return { price, qty, sum, vat: Math.round(sum * 1.2) };
 };
 
-const armPath = (k: number) => {
-  const pts: string[] = [];
-  for (let i = 0; i <= 60; i++) {
-    const p = armPoint(k, i / 60);
-    pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
-  }
-  return `M ${pts.join(" L ")}`;
-};
-const ARM_PATHS = Array.from({ length: ARMS }, (_, k) => armPath(k));
+const COLS = ["A", "B", "C", "D"];
+const LABELS = ["Ціна", "Кількість", "Сума", "З ПДВ"];
+const FORMULAS = ["", "", "= A2 * B2", "= C2 * 1.2"];
+const X0 = 330;
+const CW = 315;
+const ROW_Y = 600;
 
-const Vortex: React.FC<{ p: number }> = ({ p }) => {
+const Sheet: React.FC<{ p: number }> = ({ p }) => {
   const t = useAmbient();
-  const marbles: React.ReactNode[] = [];
-  let arrivals = 0;
-  for (let k = 0; k < ARMS; k++) {
-    const speed = 0.07 + rnd(k * 3.1) * 0.03;
-    for (let j = 0; j < PER_ARM; j++) {
-      const u = (t * speed + j / PER_ARM + rnd(k * 7 + j)) % 1;
-      if (u > 0.94) arrivals += 1;
-      const col = MARBLES[(k + j) % MARBLES.length];
-      for (let q = TRAIL - 1; q >= 0; q--) {
-        const uq = u - q * 0.008;
-        if (uq < 0) continue;
-        const pt = armPoint(k, uq);
-        const size = (3 + 5 * uq) * (1 - q / TRAIL);
-        marbles.push(<circle key={`${k}-${j}-${q}`} cx={pt.x} cy={pt.y} r={Math.max(1, size)} fill={col} opacity={(1 - q / TRAIL) * (0.25 + 0.5 * uq)} />);
-      }
-    }
-  }
-  const rings: React.ReactNode[] = [];
-  const n0 = Math.floor((t - RING_LIFE) / RING_EVERY);
-  for (let n = Math.max(0, n0); n <= Math.floor(t / RING_EVERY); n++) {
-    const age = t - n * RING_EVERY;
-    if (age < 0 || age > RING_LIFE) continue;
-    const a = age / RING_LIFE;
-    rings.push(
-      <ellipse key={n} cx={CX} cy={CY} rx={70 + a * 1100} ry={(70 + a * 1100) * 0.82} fill="none" stroke={C.teal} strokeWidth={1.5} opacity={(1 - a) * 0.28} />,
+  const k = Math.floor(t / CYCLE);
+  const age = t - k * CYCLE;
+  const now = stateAt(k);
+  const before = stateAt(k - 1);
+  const changed = k % 2 === 1 ? 0 : 1;
+  const shown = [now.price, now.qty, age >= LAG_C ? now.sum : before.sum, age >= LAG_D ? now.vat : before.vat];
+  const flash = (since: number) => (since < 0 ? 0 : Math.max(0, 1 - since / 0.9));
+  const glow = [changed === 0 ? flash(age) : 0, changed === 1 ? flash(age) : 0, flash(age - LAG_C), flash(age - LAG_D)];
+  const active = age < LAG_C ? changed : age < LAG_D ? 2 : 3;
+  const cellX = (i: number) => X0 + i * CW;
+  const edge = (from: number, to: number, on: number, lift: number) => {
+    const x1 = cellX(from) + CW / 2;
+    const x2 = cellX(to) + CW / 2;
+    const y = ROW_Y + 170;
+    return (
+      <path
+        key={`${from}-${to}`}
+        d={`M ${x1} ${y} C ${x1} ${y + lift}, ${x2} ${y + lift}, ${x2} ${y + 6}`}
+        fill="none"
+        stroke={on > 0.05 ? C.teal : C.line}
+        strokeWidth={on > 0.05 ? 2.5 : 1.8}
+        opacity={0.5 + 0.5 * on}
+        markerEnd="url(#arr)"
+      />
     );
-  }
-  const beat = 0.5 + 0.5 * Math.sin(t * 2);
-  const core = 16 + 3 * beat + Math.min(3, arrivals * 0.5);
+  };
   return (
-    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, opacity: clamp01(p) }}>
-      <defs>
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" result="b" />
-          <feMerge>
-            <feMergeNode in="b" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <radialGradient id="coreGrad">
-          <stop offset="0" stopColor={C.teal} />
-          <stop offset="0.6" stopColor={C.teal} stopOpacity="0.6" />
-          <stop offset="1" stopColor={C.teal} stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="haze">
-          <stop offset="0" stopColor={C.violet} stopOpacity="0.35" />
-          <stop offset="1" stopColor={C.violet} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      {ARM_PATHS.map((d, k) => (
-        <path key={k} d={d} fill="none" stroke={C.line} strokeWidth={1.2} opacity={0.5} />
+    <div style={{ position: "absolute", inset: 0, opacity: clamp01(p) }}>
+      <div style={{ position: "absolute", left: X0, top: ROW_Y - 120, width: CW * 4, height: 56, borderRadius: 8, border: `1.5px solid ${C.line}`, background: C.panel, display: "flex", alignItems: "center", gap: 22, padding: "0 20px", boxSizing: "border-box", fontFamily: F.mono, fontSize: 26, fontWeight: 600 }}>
+        <span style={{ color: C.faint, fontStyle: "italic" }}>fx</span>
+        <span style={{ color: C.dim }}>{`${COLS[active]}2`}</span>
+        <span style={{ color: C.text }}>{FORMULAS[active] || String(shown[active])}</span>
+      </div>
+      {COLS.map((c, i) => (
+        <React.Fragment key={c}>
+          <div style={{ position: "absolute", left: cellX(i), top: ROW_Y - 50, width: CW, textAlign: "center", fontFamily: F.mono, fontSize: 22, color: C.faint }}>{c}</div>
+          <div style={{ position: "absolute", left: cellX(i), top: ROW_Y - 18, width: CW, height: 64, boxSizing: "border-box", border: `1.5px solid ${C.line}`, borderBottom: "none", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.head, fontStyle: "italic", fontSize: 32, color: C.dim, background: "rgba(20,29,51,0.6)" }}>
+            {LABELS[i]}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: cellX(i),
+              top: ROW_Y + 46,
+              width: CW,
+              height: 110,
+              boxSizing: "border-box",
+              border: `1.5px solid ${glow[i] > 0.05 || active === i ? (i < 2 ? C.amber : C.teal) : C.line}`,
+              background: `rgba(${i < 2 ? "233,184,92" : "79,211,182"},${0.04 + 0.16 * glow[i]})`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: F.mono,
+              fontWeight: 700,
+              fontSize: 54,
+              color: i < 2 ? C.text : C.teal,
+            }}
+          >
+            {shown[i]}
+          </div>
+        </React.Fragment>
       ))}
-      <g filter="url(#glow)">{rings}</g>
-      <g filter="url(#glow)">{marbles}</g>
-      <circle cx={CX} cy={CY} r={core} fill="url(#coreGrad)" filter="url(#glow)" />
-      <text x={CX} y={CY + 62} textAnchor="middle" fontFamily={F.mono} fontWeight={600} fontSize={24} fill={C.dim}>
-        merge
-      </text>
-    </svg>
+      <div style={{ position: "absolute", left: X0 - 44, top: ROW_Y + 82, fontFamily: F.mono, fontSize: 24, color: C.faint }}>2</div>
+      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}>
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={C.dim} />
+          </marker>
+        </defs>
+        {edge(0, 2, glow[2], 120)}
+        {edge(1, 2, glow[2], 70)}
+        {edge(2, 3, glow[3], 70)}
+      </svg>
+      <div style={{ position: "absolute", left: X0, top: ROW_Y + 300, width: CW * 4, textAlign: "center", fontFamily: F.head, fontStyle: "italic", fontSize: 30, color: C.dim }}>
+        Електронна таблиця – найпоширеніша реактивна програма: змінюється вхід, і залежні клітинки перераховуються самі.
+      </div>
+    </div>
   );
 };
 
@@ -101,8 +113,8 @@ const Outro: React.FC = () => {
   const words = ["Дякую", "за", "увагу!"];
   return (
     <AbsoluteFill style={{ background: `radial-gradient(ellipse at 50% 60%, #111a30 0%, #0a0f1d 75%)`, overflow: "hidden", userSelect: "none" }}>
-      <Vortex p={s(0, 4)} />
-      <div style={{ position: "absolute", left: 0, right: 0, top: 90, textAlign: "center", fontFamily: F.head, fontWeight: 700, fontSize: 142, color: C.text, textShadow: "0 6px 40px rgba(0,0,0,0.8)" }}>
+      <Sheet p={s(0, 20)} />
+      <div style={{ position: "absolute", left: 0, right: 0, top: 90, textAlign: "center", fontFamily: F.head, fontWeight: 700, fontSize: 142, color: C.text }}>
         {words.map((w, i) => {
           const p = s(0, 6 + i * 6, POP);
           return (
@@ -112,7 +124,7 @@ const Outro: React.FC = () => {
           );
         })}
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 262, textAlign: "center", fontFamily: F.head, fontStyle: "italic", fontWeight: 500, fontSize: 44, color: C.dim, opacity: clamp01(s(0, 30)), textShadow: "0 4px 24px rgba(0,0,0,0.8)" }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 262, textAlign: "center", fontFamily: F.head, fontStyle: "italic", fontWeight: 500, fontSize: 44, color: C.dim, opacity: clamp01(s(0, 30)) }}>
         Питання?
       </div>
       <div style={{ position: "absolute", right: 96, bottom: 52, fontFamily: F.mono, fontSize: 22, fontWeight: 600, color: C.faint, opacity: clamp01(s(0, 40)) }}>made with Claude Opus 5.5</div>
