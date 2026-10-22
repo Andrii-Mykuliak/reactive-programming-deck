@@ -227,7 +227,7 @@ export const Slide: React.FC<{ title?: React.ReactNode; children?: React.ReactNo
   frame = true,
   lanes = true,
 }) => (
-  <AbsoluteFill style={{ background: C.bg, fontFamily: F.body, color: C.text, overflow: "hidden" }}>
+  <AbsoluteFill style={{ background: C.bg, fontFamily: F.body, color: C.text, overflow: "hidden", userSelect: "none" }}>
     <Backdrop lanes={lanes} />
     {frame && <Frame rule={!!title} />}
     {title ? <Title>{title}</Title> : null}
