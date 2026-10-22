@@ -1,15 +1,15 @@
-import { loadFont as loadUnbounded } from "@remotion/google-fonts/Unbounded";
+import { loadFont as loadSerif } from "@remotion/google-fonts/EBGaramond";
 import { loadFont as loadManrope } from "@remotion/google-fonts/Manrope";
 import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
 
-const unbounded = loadUnbounded("normal", { weights: ["400", "500", "700"], subsets: ["latin", "cyrillic"] });
+const serif = loadSerif("normal", { weights: ["500", "600", "700"], subsets: ["latin", "cyrillic"] });
 const manrope = loadManrope("normal", { weights: ["500", "600", "700", "800"], subsets: ["latin", "cyrillic"] });
 const mono = loadMono("normal", { weights: ["400", "600", "700"], subsets: ["latin", "cyrillic"] });
 
-/* Section theme «Декларативні та суміжні парадигми» (lectures 12–14): ink-blue signal board, event lanes, marbles. */
+/* Section theme «Декларативні та суміжні парадигми» (lectures 12–14): ink-blue board, serif headings, event lanes, marbles. */
 export const F = {
-  head: `${unbounded.fontFamily}, sans-serif`,
-  title: `${unbounded.fontFamily}, sans-serif`,
+  head: `${serif.fontFamily}, Georgia, serif`,
+  title: `${serif.fontFamily}, Georgia, serif`,
   body: `${manrope.fontFamily}, Arial, sans-serif`,
   mono: `${mono.fontFamily}, monospace`,
 };
@@ -18,32 +18,32 @@ export const F = {
 export const CH = 0.6;
 
 export const C = {
-  bg: "#0b1020",
-  bg2: "#0f1630",
-  panel: "#141c33",
-  panel2: "#1b2542",
-  line: "#2d3a5f",
-  grid: "#1a2442",
+  bg: "#0c1222",
+  bg2: "#111a30",
+  panel: "#141d33",
+  panel2: "#1a2541",
+  line: "#2f3c5e",
+  grid: "#18223d",
   text: "#eef1fb",
   dim: "#a9b2d0",
   faint: "#5f6b90",
-  accent: "#3ee6c4",
-  accentHi: "#6ff5d8",
-  teal: "#3ee6c4",
-  amber: "#ffbe55",
-  coral: "#ff6f7d",
-  red: "#ff6f7d",
-  violet: "#a08cff",
-  lav: "#a08cff",
-  blue: "#5aa9ff",
-  mint: "#7be08f",
-  orange: "#ff9a5c",
-  pink: "#ff7ac3",
-  kw: "#a08cff",
+  accent: "#4fd3b6",
+  accentHi: "#7fe3cc",
+  teal: "#4fd3b6",
+  amber: "#e9b85c",
+  coral: "#ec7c82",
+  red: "#ec7c82",
+  violet: "#a596f2",
+  lav: "#a596f2",
+  blue: "#72adf0",
+  mint: "#86d99a",
+  orange: "#f0a070",
+  pink: "#f08cc4",
+  kw: "#a596f2",
   op: "#a9b2d0",
   comment: "#6d7899",
-  str: "#ffbe55",
-  num: "#ff9a5c",
+  str: "#e9b85c",
+  num: "#f0a070",
 };
 
 /** Marble colours cycle through these, in order. */

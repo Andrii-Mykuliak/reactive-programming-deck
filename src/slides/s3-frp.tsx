@@ -26,7 +26,7 @@ const Venn: React.FC = () => {
       }}
     >
       <div style={{ position: "absolute", top: 150, left: side < 0 ? 70 : 170, width: 300, textAlign: side < 0 ? "left" : "right" }}>
-        <div style={{ fontFamily: F.head, fontWeight: 500, fontSize: 32, color }}>{title}</div>
+        <div style={{ fontFamily: F.head, fontWeight: 600, fontSize: 38, color }}>{title}</div>
         {items.map((it) => (
           <div key={it} style={{ fontFamily: F.body, fontWeight: 700, fontSize: 28, color: C.text, marginTop: 12 }}>
             {it}
@@ -42,7 +42,7 @@ const Venn: React.FC = () => {
       </Lead>
       {circle(960 - dx, C.violet, "Функційне", ["функції вищого порядку", "незмінні дані"], -1)}
       {circle(960 + dx, C.teal, "Реактивне", ["потоки подій", "асинхронність"], 1)}
-      <div style={{ position: "absolute", left: 960 - 90, top: CY - 50, width: 180, textAlign: "center", fontFamily: F.head, fontWeight: 700, fontSize: 64, color: C.text, opacity: clamp01(s(2, 12, POP)), textShadow: `0 0 30px ${C.teal}` }}>
+      <div style={{ position: "absolute", left: 960 - 90, top: CY - 50, width: 180, textAlign: "center", fontFamily: F.head, fontWeight: 700, fontSize: 76, color: C.text, opacity: clamp01(s(2, 12, POP)), textShadow: `0 0 30px ${C.teal}` }}>
         FRP
       </div>
       <At x={96} y={900} w={1728} step={3} size={32} weight={700}>

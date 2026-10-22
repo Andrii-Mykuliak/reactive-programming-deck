@@ -126,11 +126,11 @@ export const Backdrop: React.FC<{ lanes?: boolean }> = ({ lanes = true }) => {
           backgroundImage: `radial-gradient(${C.grid} 1.6px, transparent 1.7px)`,
           backgroundSize: "40px 40px",
           backgroundPosition: "20px 20px",
-          opacity: 0.9,
+          opacity: 0.6,
         }}
       />
       {lanes && (
-        <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none", opacity: 0.22 }}>
+        <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none", opacity: 0.14 }}>
           {LANES.map((y, i) => (
             <g key={i}>
               <line x1={0} y1={y} x2={1920} y2={y} stroke={C.line} strokeWidth={1.5} strokeDasharray="2 10" />
@@ -179,12 +179,12 @@ export const Frame: React.FC<{ rule?: boolean }> = ({ rule = true }) => {
           position: "absolute",
           right: 96,
           top: 50,
-          fontFamily: F.body,
-          fontWeight: 800,
-          fontSize: 20,
-          letterSpacing: 3,
-          color: C.faint,
-          textTransform: "uppercase",
+          fontFamily: F.head,
+          fontStyle: "italic",
+          fontWeight: 500,
+          fontSize: 26,
+          letterSpacing: 0.5,
+          color: C.dim,
         }}
       >
         Декларативні та суміжні парадигми
@@ -201,21 +201,21 @@ export const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       style={{
         position: "absolute",
         left: 96,
-        top: 70,
+        top: 62,
         display: "flex",
         alignItems: "center",
-        gap: 22,
+        gap: 24,
         fontFamily: F.head,
-        fontSize: 50,
-        fontWeight: 500,
+        fontSize: 62,
+        fontWeight: 600,
         color: C.text,
-        letterSpacing: -0.5,
+        letterSpacing: 0,
         whiteSpace: "nowrap",
         clipPath: `inset(-10px ${(1 - p) * 100}% -10px -10px)`,
         transform: `translateX(${(1 - p) * -30}px)`,
       }}
     >
-      <span style={{ width: 18, height: 18, borderRadius: 9, background: C.teal, boxShadow: `0 0 18px ${C.teal}` }} />
+      <span style={{ width: 6, height: 46, borderRadius: 3, background: C.teal }} />
       {children}
     </div>
   );
@@ -257,7 +257,7 @@ export const Panel: React.FC<{
       top: y,
       width: w,
       height: h,
-      borderRadius: 18,
+      borderRadius: 10,
       background: `linear-gradient(180deg, ${C.panel2} 0%, ${C.panel} 100%)`,
       border: `2px solid ${glow > 0.3 ? color : C.line}`,
       boxShadow: glow > 0.02 ? `0 0 ${34 * glow}px ${color}88` : "0 10px 30px rgba(0,0,0,0.35)",
@@ -267,10 +267,10 @@ export const Panel: React.FC<{
       overflow: "hidden",
     }}
   >
-    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: color }} />
+    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: color }} />
     {title !== undefined && (
       <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 26px 0 30px" }}>
-        <div style={{ fontFamily: F.head, fontSize: 30, fontWeight: 500, color, whiteSpace: "nowrap" }}>{title}</div>
+        <div style={{ fontFamily: F.head, fontSize: 36, fontWeight: 600, color, whiteSpace: "nowrap" }}>{title}</div>
         {tag && <div style={{ marginLeft: "auto", fontFamily: F.mono, fontSize: 22, fontWeight: 700, color: C.faint }}>{tag}</div>}
       </div>
     )}

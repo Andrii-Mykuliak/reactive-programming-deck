@@ -40,7 +40,7 @@ const Tools: React.FC = () => {
         const y = 320 + i * 186;
         return (
           <React.Fragment key={tier.k}>
-            <At x={160} y={y + 44} step={i + 1} size={34} weight={800} color={tier.c} font={F.head}>
+            <At x={160} y={y + 44} step={i + 1} size={40} weight={800} color={tier.c} font={F.head}>
               {tier.k}
             </At>
             {tier.tools.map(([name, impl], k) => (
@@ -87,7 +87,7 @@ const Observer: React.FC = () => {
       {OBS.map((o, k) => (
         <div key={k} style={{ position: "absolute", left: o.x, top: o.y - 60, width: 440, height: 120, borderRadius: 22, border: `3px solid ${C.amber}`, background: `${C.amber}10`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", boxSizing: "border-box", opacity: clamp01(s(1, 6 + k * 5, POP)) }}>
           <div style={{ fontFamily: F.mono, fontWeight: 700, fontSize: 32, color: C.amber }}>Observer {k + 1}</div>
-          <div style={{ fontFamily: F.head, fontWeight: 500, fontSize: 34, color: C.text }}>{got()}</div>
+          <div style={{ fontFamily: F.head, fontWeight: 600, fontSize: 40, color: C.text }}>{got()}</div>
         </div>
       ))}
       {Array.from({ length: n }, (_, i) =>
@@ -147,7 +147,7 @@ const Actors: React.FC = () => {
     const { x, y } = pos(i);
     return (
       <div key={i} style={{ position: "absolute", left: x - 90, top: y - 90, width: 180, height: 180, opacity: clamp01(p), transform: `scale(${mix(0.6, 1, clamp01(p))})` }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 90, border: `3px solid ${C.violet}`, background: `${C.violet}18`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.head, fontWeight: 500, fontSize: 30, color: C.text }}>{label}</div>
+        <div style={{ position: "absolute", inset: 0, borderRadius: 90, border: `3px solid ${C.violet}`, background: `${C.violet}18`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.head, fontWeight: 600, fontSize: 35, color: C.text }}>{label}</div>
         <div style={{ position: "absolute", right: -18, top: -10, minWidth: 54, height: 44, borderRadius: 10, border: `2.5px solid ${C.amber}`, background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.mono, fontWeight: 700, fontSize: 26, color: C.amber }}>
           ✉ {mailbox[i]}
         </div>

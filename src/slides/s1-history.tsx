@@ -36,7 +36,7 @@ const Timeline: React.FC = () => {
         return (
           <React.Fragment key={m.year}>
             <Marble x={xs[i]} y={TL_Y} r={26} c={m.c} p={p} glow={glow} />
-            <div style={{ position: "absolute", left: xs[i] - 200, width: 400, top: TL_Y - 110, textAlign: "center", fontFamily: F.head, fontSize: 36, fontWeight: 500, color: m.c, opacity: clamp01(p), whiteSpace: "nowrap" }}>
+            <div style={{ position: "absolute", left: xs[i] - 200, width: 400, top: TL_Y - 110, textAlign: "center", fontFamily: F.head, fontSize: 42, fontWeight: 600, color: m.c, opacity: clamp01(p), whiteSpace: "nowrap" }}>
               {m.year}
             </div>
             <Panel x={xs[i] - 190} y={TL_Y + 60} w={380} h={250} color={m.c} p={s(1, d + 6)}>
@@ -138,7 +138,7 @@ const Manifesto: React.FC = () => {
               transform: `scale(${mix(0.8, 1, clamp01(appear)) * (1 + 0.05 * active)})`,
             }}
           >
-            <div style={{ fontFamily: F.head, fontWeight: 500, fontSize: 30, color: p.c }}>{p.en}</div>
+            <div style={{ fontFamily: F.head, fontWeight: 600, fontSize: 35, color: p.c }}>{p.en}</div>
             <div style={{ fontFamily: F.body, fontWeight: 700, fontSize: 24, color: C.text, marginTop: 4, whiteSpace: "nowrap" }}>{p.ua}</div>
           </div>
         );
@@ -201,7 +201,7 @@ const Pyramid: React.FC = () => {
         return (
           <div key={tr.k} style={{ position: "absolute", left: CX - 300, width: 600, top: yb - TIER_H + 34, textAlign: "center", opacity: clamp01(p) }}>
             <div style={{ fontFamily: F.body, fontWeight: 800, fontSize: 24, letterSpacing: 3, color: tr.c, textTransform: "uppercase" }}>{tr.k}</div>
-            <div style={{ fontFamily: F.head, fontWeight: 500, fontSize: i === 2 ? 28 : 30, color: C.text, marginTop: 8, whiteSpace: "nowrap" }}>{tr.v}</div>
+            <div style={{ fontFamily: F.head, fontWeight: 600, fontSize: i === 2 ? 28 : 30, color: C.text, marginTop: 8, whiteSpace: "nowrap" }}>{tr.v}</div>
           </div>
         );
       })}

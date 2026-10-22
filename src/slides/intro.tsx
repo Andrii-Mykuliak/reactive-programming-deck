@@ -64,13 +64,13 @@ const TitleSlide: React.FC = () => {
   const { s } = useSteps();
   return (
     <Slide>
-      <At x={96} y={150} step={0} delay={4} size={34} weight={500} color={C.teal} font={F.head} style={{ letterSpacing: 6 }}>
+      <At x={96} y={150} step={0} delay={4} size={40} weight={600} color={C.teal} font={F.head} style={{ letterSpacing: 6 }}>
         ЛЕКЦІЯ 12
       </At>
-      <At x={90} y={228} step={0} delay={10} size={116} weight={700} font={F.head} style={{ letterSpacing: -2, lineHeight: 1.05 }}>
+      <At x={90} y={228} step={0} delay={10} size={137} weight={700} font={F.head} style={{ letterSpacing: -0.5, lineHeight: 1.05 }}>
         Реактивне
       </At>
-      <At x={90} y={354} step={0} delay={16} size={116} weight={700} font={F.head} style={{ letterSpacing: -2, lineHeight: 1.05 }}>
+      <At x={90} y={354} step={0} delay={16} size={137} weight={700} font={F.head} style={{ letterSpacing: -0.5, lineHeight: 1.05 }}>
         програмування
       </At>
       <At x={96} y={530} step={0} delay={26} size={38} weight={700} color={C.dim}>
@@ -144,7 +144,7 @@ const QuoteSlide: React.FC = () => {
   const { s } = useSteps();
   return (
     <Slide>
-      <div style={{ position: "absolute", left: 150, top: 170, fontFamily: F.head, fontSize: 92, fontWeight: 700, letterSpacing: -1, color: C.text, whiteSpace: "nowrap" }}>
+      <div style={{ position: "absolute", left: 150, top: 170, fontFamily: F.head, fontSize: 109, fontWeight: 700, letterSpacing: 0, color: C.text, whiteSpace: "nowrap" }}>
         {QUOTE.map((w, i) => {
           const p = s(0, 4 + i * 5, POP);
           const hl = w === "mouse" ? C.amber : w === "database." ? C.teal : undefined;

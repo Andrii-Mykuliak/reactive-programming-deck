@@ -124,7 +124,7 @@ const ServerLane: React.FC<{ y: number; blocking: boolean; step: number; title: 
         const u = clamp01((now - j.start) / (j.end - j.start));
         return <Marble key={j.a} x={SX + 60 + (blocking ? 180 * u : k * 66 + 20 * u)} y={y + 80} r={24} c={color} glow={0.4} />;
       })}
-      <div style={{ position: "absolute", left: DX, top: y + 30, width: 400, height: 100, borderRadius: 18, border: `2px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.head, fontWeight: 500, fontSize: 40, color }}>
+      <div style={{ position: "absolute", left: DX, top: y + 30, width: 400, height: 100, borderRadius: 18, border: `2px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.head, fontWeight: 600, fontSize: 47, color }}>
         готово: {done}
       </div>
     </div>
