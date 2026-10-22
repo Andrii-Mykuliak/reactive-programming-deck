@@ -85,8 +85,8 @@ const Drivers: React.FC = () => {
 /* Reactive Manifesto */
 const PRINCIPLES = [
   { en: "Responsive", ua: "Відповідь на зміни", d: "Система швидко реагує на запити за будь-яких умов, тому залишається доступною й корисною.", c: C.teal, x: 560, y: 380 },
-  { en: "Resilient", ua: "Відмовостійкість", d: "Система працює під час збоїв і відновлюється після них, зберігаючи стан і продовжуючи обробку.", c: C.coral, x: 860, y: 580 },
-  { en: "Elastic", ua: "Еластичність", d: "Система масштабується вгору або вниз під навантаження без втрати продуктивності.", c: C.amber, x: 260, y: 580 },
+  { en: "Resilient", ua: "Відмовостійкість", d: "Система працює під час збоїв і відновлюється після них, зберігаючи стан і продовжуючи обробку.", c: C.coral, x: 870, y: 580 },
+  { en: "Elastic", ua: "Еластичність", d: "Система масштабується вгору або вниз під навантаження без втрати продуктивності.", c: C.amber, x: 250, y: 580 },
   { en: "Message Driven", ua: "Керованість повідомленнями", d: "Компоненти обмінюються асинхронними повідомленнями, тому вони слабко зв’язані.", c: C.violet, x: 560, y: 780 },
 ];
 const NODE_W = 390;
@@ -94,29 +94,26 @@ const NODE_H = 116;
 
 const Manifesto: React.FC = () => {
   const { s } = useSteps();
-  const arrows: [number, number][] = [
-    [3, 1],
-    [3, 2],
-    [2, 0],
-    [1, 0],
-  ];
   const c = (i: number) => ({ x: PRINCIPLES[i].x, y: PRINCIPLES[i].y });
+  const GAP = 12;
+  const top = (i: number, dx: number) => ({ x: c(i).x + dx, y: c(i).y - NODE_H / 2 - GAP });
+  const bottom = (i: number, dx: number) => ({ x: c(i).x + dx, y: c(i).y + NODE_H / 2 + GAP });
+  // 0 Responsive, 1 Resilient, 2 Elastic, 3 Message Driven
+  const links: [{ x: number; y: number }, { x: number; y: number }][] = [
+    [top(3, -110), bottom(2, 80)],
+    [top(3, 110), bottom(1, -80)],
+    [top(2, 80), bottom(0, -110)],
+    [top(1, -80), bottom(0, 110)],
+  ];
   return (
     <Slide title="Реактивний маніфест, 2013">
       <Lead size={34}>
         Йонас Бонер, Роланд Кун, Девід Фарлі та інші описали чотири властивості систем, які витримують вимоги сучасних застосунків.
       </Lead>
-      {arrows.map(([a, b], i) => {
-        const A0 = c(a);
-        const B0 = c(b);
-        const dx = B0.x - A0.x;
-        const dy = B0.y - A0.y;
-        const len = Math.hypot(dx, dy);
-        const k1 = 95 / len;
-        const k2 = 100 / len;
-        return <Arrow key={i} x1={A0.x + dx * k1} y1={A0.y + dy * k1} x2={B0.x - dx * k2} y2={B0.y - dy * k2} step={1} delay={30 + i * 6} color={C.faint} width={4} />;
-      })}
-      <Arrow x1={c(2).x + NODE_W / 2 + 10} y1={c(2).y} x2={c(1).x - NODE_W / 2 - 10} y2={c(1).y} step={1} delay={54} color={C.faint} width={4} />
+      {links.map(([a, b], i) => (
+        <Arrow key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} step={1} delay={30 + i * 6} color={C.dim} width={4} />
+      ))}
+      <Arrow x1={c(2).x + NODE_W / 2 + GAP} y1={c(2).y} x2={c(1).x - NODE_W / 2 - GAP} y2={c(1).y} step={1} delay={54} color={C.dim} width={4} both />
       {PRINCIPLES.map((p, i) => {
         const appear = s(1, i * 7, POP);
         const active = s(i + 2, 0) * (i < 3 ? 1 - s(i + 3, 0) : 1);
@@ -131,7 +128,7 @@ const Manifesto: React.FC = () => {
               height: NODE_H,
               borderRadius: 20,
               border: `3px solid ${p.c}`,
-              background: `linear-gradient(180deg, ${p.c}26, ${p.c}10)`,
+              background: `linear-gradient(180deg, ${p.c}30, ${p.c}12), ${C.bg}`,
               boxShadow: active > 0.05 ? `0 0 ${40 * active}px ${p.c}` : undefined,
               display: "flex",
               flexDirection: "column",

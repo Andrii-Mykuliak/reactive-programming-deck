@@ -187,27 +187,34 @@ const Search: React.FC = () => {
 };
 
 /* React and FRP */
+const BOX_W = 104;
+const BOX_H = 46;
+const TREE: { x: number; y: number; d: number }[] = [
+  { x: 380, y: 30, d: 0 },
+  { x: 260, y: 140, d: 1 },
+  { x: 500, y: 140, d: 1 },
+  { x: 190, y: 250, d: 2 },
+  { x: 330, y: 250, d: 2 },
+  { x: 500, y: 250, d: 2 },
+];
+const TREE_EDGES = [
+  [0, 1],
+  [0, 2],
+  [1, 3],
+  [1, 4],
+  [2, 5],
+];
+const RENDER_AT = 30;
+const LEVEL_GAP = 14;
+
 const ReactVsFrp: React.FC = () => {
   const { s, t } = useSteps();
-  const flash = (k: number) => {
-    const tt = t(1, 30 + k * 6);
-    return tt < 0 ? 0 : Math.max(0, 1 - Math.abs(tt - 8) / 14);
+  const flash = (d: number) => {
+    const tt = t(1, RENDER_AT + d * LEVEL_GAP);
+    return tt < 0 ? 0 : Math.max(0, 1 - Math.abs(tt - 8) / 16);
   };
-  const tree = [
-    [210, 0],
-    [110, 110],
-    [310, 110],
-    [50, 220],
-    [170, 220],
-    [370, 220],
-  ];
-  const edges = [
-    [0, 1],
-    [0, 2],
-    [1, 3],
-    [1, 4],
-    [2, 5],
-  ];
+  const changed = t(1, 18) >= 0;
+  const chip = s(1, 18, POP);
   return (
     <Slide title="React і FRP">
       <Lead size={36}>React перегукується з FRP, але не є його класичним представником.</Lead>
@@ -215,13 +222,42 @@ const ReactVsFrp: React.FC = () => {
         <div style={{ fontFamily: F.body, fontWeight: 700, fontSize: 29, lineHeight: 1.38, color: C.text, marginTop: 8 }}>
           Декларативний інтерфейс: зміна <A c={C.blue}>стану</A> спричиняє повторний рендеринг компонентів.
         </div>
-        <svg width={440} height={250} style={{ position: "absolute", left: 200, top: 250 }}>
-          {edges.map(([a, b], i) => (
-            <line key={i} x1={tree[a][0]} y1={tree[a][1] + 20} x2={tree[b][0]} y2={tree[b][1] + 20} stroke={C.line} strokeWidth={3} />
+        <svg width={640} height={310} style={{ position: "absolute", left: 100, top: 210, overflow: "visible" }}>
+          {TREE_EDGES.map(([a, b], i) => (
+            <path
+              key={i}
+              d={`M ${TREE[a].x} ${TREE[a].y + BOX_H} C ${TREE[a].x} ${TREE[a].y + BOX_H + 34}, ${TREE[b].x} ${TREE[b].y - 34}, ${TREE[b].x} ${TREE[b].y}`}
+              fill="none"
+              stroke={C.dim}
+              strokeWidth={3}
+              opacity={0.55}
+            />
           ))}
-          {tree.map(([x, y], i) => {
-            const f = flash(i);
-            return <rect key={i} x={x - 40} y={y} width={80} height={40} rx={10} fill={f > 0.05 ? `${C.blue}` : C.panel2} stroke={C.blue} strokeWidth={3} opacity={0.6 + 0.4 * f} />;
+          <g opacity={clamp01(s(1, 6))}>
+            <rect x={0} y={TREE[0].y} width={170} height={BOX_H} rx={23} fill={C.bg} stroke={C.amber} strokeWidth={3} />
+            <text x={85} y={TREE[0].y + 31} textAnchor="middle" fontFamily={F.mono} fontWeight={700} fontSize={24} fill={C.amber} style={{ transform: `scale(${changed ? 1 + 0.12 * (1 - clamp01(chip)) : 1})`, transformOrigin: "85px 53px" }}>
+              {`стан: ${changed ? 2 : 1}`}
+            </text>
+            <line x1={182} y1={TREE[0].y + BOX_H / 2} x2={TREE[0].x - BOX_W / 2 - 14} y2={TREE[0].y + BOX_H / 2} stroke={C.amber} strokeWidth={3} />
+            <polygon points={`${TREE[0].x - BOX_W / 2 - 4},${TREE[0].y + BOX_H / 2} ${TREE[0].x - BOX_W / 2 - 18},${TREE[0].y + BOX_H / 2 - 8} ${TREE[0].x - BOX_W / 2 - 18},${TREE[0].y + BOX_H / 2 + 8}`} fill={C.amber} />
+          </g>
+          {TREE.map((n, i) => {
+            const f = flash(n.d);
+            return (
+              <rect
+                key={i}
+                x={n.x - BOX_W / 2}
+                y={n.y}
+                width={BOX_W}
+                height={BOX_H}
+                rx={12}
+                fill={f > 0.02 ? C.blue : C.bg}
+                fillOpacity={f > 0.02 ? 0.25 + 0.75 * f : 1}
+                stroke={C.blue}
+                strokeWidth={3}
+                style={{ filter: f > 0.05 ? `drop-shadow(0 0 ${14 * f}px ${C.blue})` : undefined }}
+              />
+            );
           })}
         </svg>
       </Panel>

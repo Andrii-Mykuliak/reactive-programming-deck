@@ -321,7 +321,8 @@ export const Arrow: React.FC<{
   width?: number;
   curve?: number;
   dash?: string;
-}> = ({ x1, y1, x2, y2, step, delay = 0, dur = 18, color = C.dim, width = 4, curve = 0, dash }) => {
+  both?: boolean;
+}> = ({ x1, y1, x2, y2, step, delay = 0, dur = 18, color = C.dim, width = 4, curve = 0, dash, both }) => {
   const { lin } = useSteps();
   const p = lin(step, delay, dur);
   const mx = (x1 + x2) / 2;
@@ -335,13 +336,16 @@ export const Arrow: React.FC<{
   const L = len * (1 + Math.abs(curve) / len);
   const ang = Math.atan2(y2 - cy, x2 - cx);
   const head = 16;
-  const pts = [
-    [x2, y2],
-    [x2 - head * Math.cos(ang - 0.45), y2 - head * Math.sin(ang - 0.45)],
-    [x2 - head * Math.cos(ang + 0.45), y2 - head * Math.sin(ang + 0.45)],
-  ]
-    .map((q) => q.join(","))
-    .join(" ");
+  const tri = (x: number, y: number, a: number) =>
+    [
+      [x, y],
+      [x - head * Math.cos(a - 0.45), y - head * Math.sin(a - 0.45)],
+      [x - head * Math.cos(a + 0.45), y - head * Math.sin(a + 0.45)],
+    ]
+      .map((q) => q.join(","))
+      .join(" ");
+  const pts = tri(x2, y2, ang);
+  const back = tri(x1, y1, Math.atan2(y1 - cy, x1 - cx));
   return (
     <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible", pointerEvents: "none" }} width={1} height={1}>
       {dash ? (
@@ -350,6 +354,7 @@ export const Arrow: React.FC<{
         <path d={d} stroke={color} strokeWidth={width} fill="none" strokeLinecap="round" strokeDasharray={L} strokeDashoffset={L * (1 - p)} />
       )}
       <polygon points={pts} fill={color} opacity={interpolate(p, [0.85, 1], [0, 1], { extrapolateLeft: "clamp" })} />
+      {both && <polygon points={back} fill={color} opacity={interpolate(p, [0.85, 1], [0, 1], { extrapolateLeft: "clamp" })} />}
     </svg>
   );
 };
